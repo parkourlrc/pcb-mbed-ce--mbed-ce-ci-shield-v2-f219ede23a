@@ -8,15 +8,15 @@ This board contains the following hardware:
   - 2 ports are available externally, 2 ports are connected internally
 - 1x Infineon (Cypress) CY7C65211 USB to SPI/I2C/UART adapter
   - This is connected to a number of different data lines via 4-to-1 multiplexer ICs.
-- 1x Infineon (Cypress) FX2LP USB Microcontroller
-  - This is programmed with Sigrok FX2LAFW firmware to turn it into an inexpensive plug-and-play logic analyzer
+- 1x RP2350 USB Microcontroller
+  - This gets programmed with Sigrok firmware to turn it into an inexpensive plug-and-play logic analyzer
 - 1x MicroSD card slot
 - 1x 24FC64-I/SN 8KiB EEPROM
 - 1x PWM to ADC loopback
 - 1x Power USB Port (designed to be connected to a power source like a travel charger, data lines not hooked up)
 - 1x Data USB Port (designed to be connected to a test runner machine, potentially a single board computer without too much power)
 
-*Note: I swear I'm not sponsored by Infineon or anything, it just so happened that their chips were the best fit for everything I needed on the board.  I even tried to use an FT232H in the first rev of the hardware, but I could not for the life of me get it to work.*
+*Note: I swear I'm not sponsored by Infineon or anything, it just so happened that their chips were the best fit for lots of things I needed on the board.  I even tried to use an FT232H in the first rev of the hardware, but I could not for the life of me get it to work.*
 
 It can test up to 10 different types of IO:
 | IO Type | Test Method |
@@ -61,7 +61,7 @@ Before powering on a board, check that the resistance across the 5V rail is at l
 When you first plug in a board, you should see three USB devices enumerate:
 - One "Cypress Semiconductor Corp. Unprogrammed CY7C65632/34 hub HX2VL"
 - One "Cypress Semiconductor Corp. USB-Serial (Single Channel)"
-- One FX2LP in no-EEPROM mode (TODO what is this named in lsusb?)
+- One blank RP2350 (enumerates as a USB drive called "RP2350")
 
 If these USB devices do not enumerate, double-check the circuitry for the chips that don't enumerate.
 
@@ -74,20 +74,19 @@ To build and flash the logic analyzer firmware, you will need [Small Device C Co
 After installing these (and setting up udev rules for fxload, if on Linux), run the following commands from the repo root:
 
 ```
-$ cd Firmware
-$ python3 fx2lafw_update_serial_number.py 001 <replace 001 with the serial number you want to give this board>
-$ cd sigrok-firmware-fx2lafw
-$ ./autogen.sh
+$ cd Firmware/sigrok-pico
 $ mkdir build
 $ cd build
-$ ../configure
-$ make
-$ fxload load_eeprom --ihex-path hw/sigrok-fx2-8ch/fx2lafw-sigrok-fx2-8ch.ihx -t FX2LP --control-byte 0xC2
+$ cmake ../pico_sdk_sigrok -DPICO_SDK_FETCH_FROM_GIT=TRUE -DPICO_BOARD=pico2 -GNinja
+$ python3 ../../sigrok_pico_update_serial_number.py 001 <replace 001 with the serial number you want to give this board>
+$ ninja
 ```
+
+After this step, you should be left with a pico_sdk_sigrok.uf2 file in the build dir. Copy this file to the RP2350 drive, and you should be off to the races!
 
 Finally, unplug and replug the board from power and data.
 
-Note: The python script run in step 2 works by modifying one of the fx2lafw source files to inject a unique serial number into the firmware, as I wasn't able to find any other way to do this.
+Note: The python script run in step 5 works by modifying one of the pico-sdk source files to inject a unique serial number into the firmware, as I wasn't able to find any other way to do this.
 
 ### Flashing USB-Serial Adapter Configuration
 

@@ -1,3 +1,6 @@
 [submodule "Firmware/sigrok-firmware-fx2lafw"]
 	path = Firmware/sigrok-firmware-fx2lafw
 	url = git://sigrok.org/sigrok-firmware-fx2lafw
+[submodule "Firmware/sigrok-pico"]
+	path = Firmware/sigrok-pico
+	url = https://github.com/pico-coder/sigrok-pico.git
