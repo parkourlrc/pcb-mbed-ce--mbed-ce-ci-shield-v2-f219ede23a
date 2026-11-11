@@ -27,7 +27,7 @@ except ValueError:
     sys.exit(1)
 
 descriptor_file_text = serno_descriptor_file.read_text()
-search_result = re.search(DESCRIPTOR_LINE_REGEX, descriptor_file_text)
+search_result = re.search(SERIAL_DESCRIPTOR_LINE_REGEX, descriptor_file_text)
 if search_result is None:
     print("Can't fine target line in source file")
     sys.exit(1)
@@ -43,7 +43,7 @@ print("New serial number: " + new_serial_number)
 new_serial_descriptor_line = '[USBD_STR_SERIAL] = "' + new_serial_number + '",'
 new_description_descriptor_line = '[USBD_STR_CDC] = "CI Shield ' + new_serial_number + ' Sigrok-Pico",'
 
-new_file_text = re.sub(SERIAL_DESCRIPTOR_LINE_REGEX, new_descriptor_line, descriptor_file_text)
-new_file_text = re.sub(DESCRIPTION_DESCRIPTOR_LINE_REGEX, new_description_descriptor_line, descriptor_file_text)
+descriptor_file_text = re.sub(SERIAL_DESCRIPTOR_LINE_REGEX, new_serial_descriptor_line, descriptor_file_text)
+descriptor_file_text = re.sub(DESCRIPTION_DESCRIPTOR_LINE_REGEX, new_description_descriptor_line, descriptor_file_text)
 
-serno_descriptor_file.write_text(new_file_text)
+serno_descriptor_file.write_text(descriptor_file_text)

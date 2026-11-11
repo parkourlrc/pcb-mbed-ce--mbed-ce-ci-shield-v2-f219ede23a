@@ -84,6 +84,11 @@ $ ninja
 
 After this step, you should be left with a pico_sdk_sigrok.uf2 file in the build dir. Copy this file to the RP2350 drive, and you should be off to the races!
 
+You can also upload using picotool (good if you want to change the firmware on an existing device):
+```
+$ picotool load --force --verify --execute --offset 0x10000000 pico_sdk_sigrok.bin
+```
+
 Finally, unplug and replug the board from power and data.
 
 Note: The python script run in step 5 works by modifying one of the pico-sdk source files to inject a unique serial number into the firmware, as I wasn't able to find any other way to do this.
